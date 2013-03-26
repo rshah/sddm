@@ -22,6 +22,7 @@
 #include "Authenticator.h"
 #include "Configuration.h"
 #include "DisplayServer.h"
+#include "Seat.h"
 #include "SocketServer.h"
 #include "Greeter.h"
 
@@ -51,14 +52,14 @@ namespace SDDM {
         return name;
     }
 
-    Display::Display(const int displayNumber, const int vtNumber, QObject *parent) : QObject(parent),
-        m_displayNumber(displayNumber), m_vtNumber(vtNumber),
+    Display::Display(const int displayId, const int terminalId, QObject *parent) : QObject(parent),
+        m_displayId(displayId), m_terminalId(terminalId),
         m_authenticator(new Authenticator(this)),
         m_displayServer(new DisplayServer(this)),
         m_socketServer(new SocketServer(this)),
         m_greeter(new Greeter(this)) {
 
-        m_display = QString(":%1").arg(m_displayNumber);
+        m_display = QString(":%1").arg(m_displayId);
 
         // stop the display after user session ends
         connect(m_authenticator, SIGNAL(stopped()), this, SLOT(stop()));
@@ -90,12 +91,12 @@ namespace SDDM {
         stop(false);
     }
 
-    const int Display::displayNumber() const {
-        return m_displayNumber;
+    const int Display::displayId() const {
+        return m_displayId;
     }
 
-    const int Display::vtNumber() const {
-        return m_vtNumber;
+    const int Display::terminalId() const {
+        return m_terminalId;
     }
 
     const QString &Display::name() const {
@@ -104,10 +105,6 @@ namespace SDDM {
 
     const QString &Display::cookie() const {
         return m_cookie;
-    }
-
-    const QString &Display::seatId() const {
-        return m_seatId;
     }
 
     void Display::start() {
